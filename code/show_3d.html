@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<link href="../css/base.css" rel="stylesheet" />
+<link href="../css/show_3d.css" rel="stylesheet"/>
+<script>
+	window.onload = function(){
+		<!--3D作品展示-->
+		var oP_btn = document.querySelector('.prev_btn');
+		var oN_btn = document.querySelector('.next_btn');
+		var aLii = document.querySelectorAll('.show_3d .tblr li');
+		var aClass = [];
+			for(var i=0;i<aLii.length;i++){
+				aClass[i] = aLii[i].className;
+			}
+			var bOk = false;
+			oP_btn.onclick = function(){
+				if(bOk)return;
+				bOk = true;
+				aClass.push(aClass.shift());
+				change();
+			};
+			oN_btn.onclick = function(){
+				if(bOk)return;
+				bOk = true;
+				aClass.unshift(aClass.pop());
+				change();
+			};
+			function change(){
+				for(var i=0;i<aLii.length;i++){
+					aLii[i].style.WebkitTransition = '.5s all ease';
+					aLii[i].style.MozTransition = '.5s all ease';
+					aLii[i].className = aClass[i];
+				}
+				var oCur = document.querySelector('.cur');
+				function tranEnd(){
+					oCur.removeEventListener('transitionend',tranEnd,false);
+					bOk = false;
+				}
+				oCur.addEventListener('transitionend',tranEnd,false);
+			}		
+		<!--列表展示-->
+		var timer = null;
+		var oShow = document.querySelector('.show');
+		var oSh_time = document.querySelector('.showTime');
+            oShow.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oShow.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+            oSh_time.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oSh_time.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+ 		<!--回到顶部-->
+		var oBt = document.querySelector('.back_top');
+		var oBack = document.querySelector('.back');
+            var timer=null;
+            var lock = false;
+            window.onscroll=function(){
+                var srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+                if(lock){
+                    clearInterval(timer);
+                }
+                lock=true;
+                if(srcoll<=0){
+					oBack.style.display = 'none';
+                    oBt.style.display='none';
+                }else{
+					oBack.style.display = 'block';
+                    oBt.style.display='block';
+                }
+            };
+            oBt.onclick=function(){
+                clearInterval(timer);
+                var Srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+                var start = Srcoll;
+                var dis = 0-start;
+                var count=Math.floor(document.body.offsetHeight/30);
+                var n=0;
+                timer=setInterval(function(){
+                    n++;
+                    lock=false;
+                    document.documentElement.scrollTop=document.body.scrollTop=start+dis*n/count;
+                    if(n==count){
+                        clearInterval(timer);
+                    }
+                },30)
+            };
+	}
+</script>
+</head>
+
+<body>
+	<div class="back">
+        <a href="javascript:;" class="back_top">*↑</a>
+    </div>
+	<div class="header">
+        <ul class="item clearfix" id="item">
+            <li class="on"><a href="../index.html">返回主页</a></li>
+            <li class="show"><a href="javascript:;">效果展示</a></li>
+            <i class="showTime">
+               <p class="boom"><a href="boom.html">爆炸效果展示</a></p>
+               <p class="rotate"><a href="rotate.html">旋转效果</a></p>
+               <p class="demo"><a href="demo.html">动画效果展示</a></p>
+               <p class="wind"><a href="lines.html">线条旋转</a></p>
+            </i>
+        </ul>
+    </div>
+    <div class="show_3d">
+        <p class="prev_btn">上一页</p>
+        <p class="next_btn">下一页</p>
+        <ul class="tblr">
+            <li class="l2"><img src="../imgs/80.png" alt=""/></li>
+            <li class="l1"><img src="../imgs/79.png" alt=""></li>
+            <li class="cur"><img src="../imgs/78.png" alt=""/></li>
+            <li class="r1"><img src="../imgs/86.png" alt=""/></li>
+            <li class="r2"><img src="../imgs/85.png" alt=""/></li>
+            <li><img src="../imgs/81.png" alt=""/></li>
+            <li><img src="../imgs/82.png" alt=""/></li>
+            <li><img src="../imgs/83.png" alt=""/></li>
+            <li><img src="../imgs/84.png" alt=""/></li>
+        </ul>
+    </div>	
+</body>
+</html>

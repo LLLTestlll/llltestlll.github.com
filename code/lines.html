@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<link href="../css/base.css" rel="stylesheet"/>
+<link href="../css/lines.css" rel="stylesheet" />
+<script>
+	function rnd(n,m){
+		return Math.floor(Math.random()*(m-n)+n);
+	}
+	window.onload = function(){
+	<!--canvas线条随机旋转-->
+		var oC = document.getElementById('cc');
+		oC.width = document.documentElement.clientWidth;
+		oC.height = document.documentElement.clientHeight;
+		var oChange = document.querySelector('.change');
+		var oStop = document.querySelector('.stop');
+		var gd = oC.getContext('2d');
+		var N = 5;
+		var aPoint = [];
+		var timerr = 0;
+		for(var i=0;i<N;i++){
+			aPoint.push({
+				x:rnd(0,oC.width),
+				y:rnd(0,oC.height),
+				iSpeedX:rnd(-10,10),
+				iSpeedY:rnd(-10,10)
+			});
+		}
+		var COUNT = 5;
+		var aOldPoint = [];
+		var bLock = false;
+		oChange.onclick  = function(){
+			if(bLock)return;
+			bLock = true;
+			//运动、画点
+			timerr = setInterval(function(){
+				gd.clearRect(0,0,oC.width,oC.height);
+				//运动
+				for(var i=0;i<aPoint.length;i++){
+					if(aPoint[i].x<0){
+						aPoint[i].iSpeedX*=-1;
+					}
+					if(aPoint[i].y<0){
+						aPoint[i].iSpeedY*=-1;
+					}
+					if(aPoint[i].x>oC.width){
+						aPoint[i].iSpeedX*=-1;
+					}
+					if(aPoint[i].y>oC.height){
+						aPoint[i].iSpeedY*=-1;
+					}
+					aPoint[i].x+=aPoint[i].iSpeedX;
+					aPoint[i].y+=aPoint[i].iSpeedY;
+				}
+				//画点
+				for(var i=0;i<aPoint.length;i++){
+					drawPoint(aPoint[i]);
+				}
+				//连线
+				gd.beginPath();
+				gd.moveTo(aPoint[0].x,aPoint[0].y);
+				for(var i=1;i<aPoint.length;i++){
+					gd.lineTo(aPoint[i].x,aPoint[i].y);
+				}
+				gd.closePath();
+				gd.strokeStyle = '#fff';
+				gd.stroke();
+				var arr = [];
+				for(var i=0;i<aPoint.length;i++){
+					arr.push({
+						x:aPoint[i].x,
+						y:aPoint[i].y,
+						iSpeedX:aPoint[i].iSpeedX,
+						iSpeedY:aPoint[i].iSpeedY
+					});
+				}
+				aOldPoint.push(arr);
+				if(aOldPoint.length>COUNT){
+					aOldPoint.shift();
+				}
+				//画老点
+				gd.beginPath();
+				for(var i=0;i<aOldPoint.length;i++){
+					gd.moveTo(aOldPoint[i][0].x,aOldPoint[i][0].y);
+					for(var j=1;j<aOldPoint[i].length;j++){
+						gd.lineTo(aOldPoint[i][j].x,aOldPoint[i][j].y);
+					}
+					gd.closePath();
+					gd.strokeStyle = 'rgba(255,255,255)'+(i/aOldPoint.length/3)+')';
+					gd.stroke();
+					
+				}
+			},30);
+		}
+		oStop.onclick = function(){
+			clearInterval(timerr);
+			bLock = false;	
+		}
+		function drawPoint(oPoint){
+			gd.beginPath();
+			gd.fillStyle = '#fff';
+			gd.fillRect(oPoint.x,oPoint.y,1,1);
+		}		
+		<!--列表展示-->
+		var timer = null;
+		var oShow = document.querySelector('.show');
+		var oSh_time = document.querySelector('.showTime');
+            oShow.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oShow.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+            oSh_time.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oSh_time.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+ 		<!--回到顶部-->
+		var oBt = document.querySelector('.back_top');
+		var oBack = document.querySelector('.back');
+            var timer=null;
+            var lock = false;
+            window.onscroll=function(){
+                var srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+                if(lock){
+                    clearInterval(timer);
+                }
+                lock=true;
+                if(srcoll<=0){
+					oBack.style.display = 'none';
+                    oBt.style.display='none';
+                }else{
+					oBack.style.display = 'block';
+                    oBt.style.display='block';
+                }
+            };
+            oBt.onclick=function(){
+                clearInterval(timer);
+                var Srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+                var start = Srcoll;
+                var dis = 0-start;
+                var count=Math.floor(document.body.offsetHeight/30);
+                var n=0;
+                timer=setInterval(function(){
+                    n++;
+                    lock=false;
+                    document.documentElement.scrollTop=document.body.scrollTop=start+dis*n/count;
+                    if(n==count){
+                        clearInterval(timer);
+                    }
+                },30)
+            };
+	}
+</script>
+</head>
+
+<body>
+	<div class="back">
+        <a href="javascript:;" class="back_top">*↑</a>
+    </div>	
+	<div class="header">
+        <ul class="item clearfix" id="item">
+            <li class="on"><a href="../index.html">返回主页</a></li>
+            <li class="show"><a href="javascript:;">效果展示</a></li>
+            <i class="showTime">
+               <p class="pic_3d"><a href="show_3d.html">3D效果展示</a></p>
+               <p class="demo"><a href="demo.html">动画效果展示</a></p>
+               <p class="rotate"><a href="rotate.html">旋转效果</a></p>
+               <p class="wind"><a href="boom.html">爆炸效果展示</a></p>
+            </i>
+        </ul>
+    </div>
+    <div class="button">
+        <a href="javascrip:;" class="change">点点点点</a>
+        <a href="javascrip:;" class="stop">停停停停</a>
+    </div>
+    <canvas id="cc"></canvas>
+</body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,685 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>个人网站</title>
+<link href="css/base.css" rel="stylesheet"/>
+<link href="css/style.css" rel="stylesheet"/>
+<script src="js/move.js"></script>
+<script>
+	<!--效果欣赏-->
+	function a2d(n){
+		return n*180/Math.PI;
+	}
+	function hoverDir(ev,obj){
+		var a = ev.clientX-obj.offsetLeft-obj.offsetWidth/2;
+		var b = obj.offsetTop+obj.offsetHeight/2-ev.clientY;
+		
+		return Math.round((a2d(Math.atan2(b,a))+180)/90)%4;
+	}
+	function through(obj){
+		var oS = obj.children[0];
+		//alert(oS);
+		obj.onmouseenter = function(ev){
+			var oEvent = ev||event;
+			var dir = hoverDir(oEvent,obj);
+			switch(dir){
+				case 0:
+					//左
+					oS.style.left = '-200px';
+					oS.style.top = 0;
+					break;
+				case 1:
+					//下
+					oS.style.left = 0;
+					oS.style.top = '200px';
+					break;
+				case 2:
+					//右
+					oS.style.left = '200px';
+					oS.style.top = 0;
+					break;
+				case 3:
+					//上
+					oS.style.left = 0;
+					oS.style.top = '-200px';
+					break;
+			}
+			move(oS,{left:0,top:0});
+		};
+		obj.onmouseleave = function(ev){
+			var oEvent = ev||event;
+			var dir = hoverDir(oEvent,obj);
+			switch(dir){
+				case 0:
+					move(oS,{left:-200,top:0});
+					break;
+				case 1:
+					move(oS,{left:0,top:200});
+					break;
+				case 2:
+					move(oS,{left:200,top:0});
+					break;
+				case 3:
+					move(oS,{left:0,top:-200});
+					break;
+			}
+		};
+	}
+	window.onload=function(){
+		<!--效果欣赏-->
+		var aLth = document.querySelectorAll('.wear li');
+		for(var i=0;i<aLth.length;i++){
+			through(aLth[i]);
+		}		
+		<!--top首页部分-->
+		<!--选项卡-->
+		var oAll = document.getElementById('all_site');
+		var oItem = document.getElementById('#item');
+		var aLi = document.querySelectorAll('#item li');
+		var aDiv = document.querySelectorAll('.top,.middle,.down');
+		var oNext = document.querySelector('.pn_btn .next');
+		var oPrev = document.querySelector('.pn_btn .prev');
+		var num = 0;
+		for(var i=0;i<aLi.length;i++){
+			(function(index){
+				aLi[index].onclick = function(){
+					for(var i=0;i<aLi.length;i++){
+						 aLi[i].className='';
+						 aDiv[i].style.display='none';	
+					}	
+					 this.className='on';
+					 num = index;
+					aDiv[index].style.display='block';
+				}	
+			})(i);
+		}
+		//上/下一页
+		oPrev.onclick = function(){
+			num--;
+			if(num == -1){
+				num = 2;	
+			}
+			for(var i=0;i<aDiv.length;i++){
+				aDiv[i].style.display='none';	
+			}	
+				aDiv[num].style.display='block';
+		}
+		oNext.onclick = function(){
+			num++;
+			if(num>=3){
+				num = 0;	
+			}
+			for(var i=0;i<aDiv.length;i++){
+				aDiv[i].style.display='none';	
+			}	
+				aDiv[num].style.display='block';
+		}
+		<!--列表展示-->
+		var timer = null;
+		var oShow = document.querySelector('.show');
+		var oSh_time = document.querySelector('.showTime');
+            oShow.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oShow.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+            oSh_time.onmouseover=function(){
+                clearTimeout(timer);
+                oSh_time.style.display='block';
+            };
+            oSh_time.onmouseout=function(){
+                timer=setTimeout(function(){
+                    oSh_time.style.display='none';
+                },300);
+            };
+		<!--按比例缩放(简介)-->
+		var oBtn = document.querySelector('.intro_btn');
+		var oBox = document.querySelector('.intro_box');
+		var oClose = document.querySelector('.close_btn');
+			
+			
+		var oBtn2 = document.querySelector('.intro_btn_two');
+		var oBox2 = document.querySelector('.intro_box_two');
+		var oClose2 = document.querySelector('.close_btn_two');
+		//点击按钮调用	
+		oBtn.onclick = function(){
+			click(oBox,200,200)
+			drag_box(oBox);
+		};
+		oBtn2.onclick = function(){
+			click(oBox2,500,200);
+			drag_box(oBox2);	
+		}
+		//点击按钮封装
+		function click(obj,x,y){
+			obj.style.display = 'block';
+			
+			obj.style.WebkitTransition = '.5s all ease';
+			obj.style.MozTransition = '.5s all ease';
+			obj.style.transition = '.5s all ease';
+			setTimeout(function(){
+				obj.style.opacity = 1;
+				obj.style.WebkitTransform = 'scale(1,1)';
+				obj.style.MozTransform = 'scale(1,1)';
+				obj.style.position = 'absolute';
+				obj.style.left = x+'px';
+				obj.style.top = y+'px';
+			},5);
+		}
+		//关闭按钮调用
+		oClose.onclick = function(){
+			close(oBox);
+		};
+		oClose2.onclick = function(){
+			close(oBox2);	
+		}
+		//关闭按钮封装
+		function close(obj){
+			obj.style.opacity = 0;
+			obj.style.WebkitTransform = 'scale(4,4)';
+			obj.style.MozTransform = 'scale(4,4)';
+			function tranEnd(){
+				obj.removeEventListener('transitionend',tranEnd,false);
+				obj.style.display='none';
+			}
+			obj.addEventListener('transitionend',tranEnd,false);
+		}
+		//拖拽封装
+		function drag_box(obj){
+			obj.onmousedown = function(ev){
+				var oEvent = ev|| event;
+				var disX = oEvent.clientX-obj.offsetLeft;
+                var disY = oEvent.clientY-obj.offsetTop;
+				document.onmousemove = function(ev){
+					var oEvent = ev || event;
+                    var l = oEvent.clientX-disX;
+                    var t = oEvent.clientY-disY;
+                    if(l<0){
+                        l=0;
+                    }
+                    if(l>document.documentElement.clientWidth-obj.offsetWidth){
+                        l=document.documentElement.clientWidth-obj.offsetWidth;
+                    }
+                    if(t<0){
+                        t=0;
+                    }
+                    if(t>document.documentElement.clientHeight-obj.offsetHeight){
+                        t=document.documentElement.clientHeight-obj.offsetHeight;
+                    }
+                    obj.style.left=l+'px';
+                    obj.style.top=t+'px';
+				}
+				document.onmouseup=function(){
+                    document.onmousemove=null;
+                    document.onmouseup=null;
+                    obj.releaseCapture && obj.releaseCapture()
+                };
+                obj.setCapture &&obj.setCapture();
+                return false;
+			}	
+		}
+ 		<!--回到顶部-->
+		var oBt = document.querySelector('.back_top');
+		var oBack = document.querySelector('.back');
+		var timer=null;
+		var lock = false;
+		window.onscroll=function(){
+			var srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+			if(lock){
+				clearInterval(timer);
+			}
+			lock=true;
+			if(srcoll<=0){
+				oBack.style.display = 'none';
+				oBt.style.display='none';
+			}else{
+				oBack.style.display = 'block';
+				oBt.style.display='block';
+			}
+		};
+		oBt.onclick=function(){
+			clearInterval(timer);
+			var Srcoll = document.documentElement.scrollTop || document.body.scrollTop;
+			var start = Srcoll;
+			var dis = 0-start;
+			var count=Math.floor(document.body.offsetHeight/30);
+			var n=0;
+			timer=setInterval(function(){
+				n++;
+				lock=false;
+				document.documentElement.scrollTop=document.body.scrollTop=start+dis*n/count;
+				if(n==count){
+					clearInterval(timer);
+				}
+			},30)
+		};
+		<!--简易时钟-->
+		var oClock = document.querySelector('.clock');
+		var oHou = document.querySelector('.hou');
+		var oMin = document.querySelector('.min');
+		var oSec = document.querySelector('.sec');
+		
+		var N = 60;
+		for(var i=0;i<N;i++){
+			var oS = document.createElement('span');
+			//每个刻度都是6°
+			oS.style.WebkitTransform = 'rotate('+i*6+'deg)';
+			oS.style.MozTransform = 'rotate('+i*6+'deg)';
+			//如果i%5==0，那就是大刻度
+			if(i%5==0){
+				oS.className = 'big_scale';
+				//加上数字
+				oS.innerHTML = '<i>'+(i/5||12)+'<\/i>';
+				var oI = oS.children[0];
+				//让数字转回来
+				oI.style.WebkitTransform = 'rotate('+-i*6+'deg)';
+				oI.style.MozTransform = 'rotate('+-i*6+'deg)';
+			}
+			oClock.appendChild(oS);
+		}
+			function clock(){
+				var oDate = new Date();
+				var h = oDate.getHours();
+				var m = oDate.getMinutes();
+				var s = oDate.getSeconds();
+				var ms = oDate.getMilliseconds();
+				
+				oHou.style.WebkitTransform = 'rotate('+(h*30+m/60*30)+'deg)';
+				oHou.style.MozTransform = 'rotate('+(h*30+m/60*30)+'deg)';
+				
+				oMin.style.WebkitTransform = 'rotate('+(m*6+s/60*6)+'deg)';
+				oMin.style.MozTransform = 'rotate('+(m*6+s/60*6)+'deg)';
+				
+				oSec.style.WebkitTransform = 'rotate('+(s*6+ms/1000*6)+'deg)';
+				oSec.style.MozTransform = 'rotate('+(s*6+ms/1000*6)+'deg)';
+			}
+			clock();
+			setInterval(clock,1);
+		<!--显示/隐藏-->
+		var oDisp = document.querySelector('.dis1');
+		var oCon  = document.querySelector('.content');
+		var oHid = document.querySelector('.hide');
+		oHid.style.display = 'none';
+		oDisp.onclick = function(){
+			oHid.style.display = 'block';
+			oHid.style.opacity = 1;
+			oCon.style.dispay = 'block';
+			oCon.style.WebkitTransition ='5s all ease';
+			oCon.style.MozTransition ='5s all ease';
+			oCon.style.transition ='5s all ease';
+			click(oCon,860,-350)
+		}
+		oHid.onclick = function(){
+			oHid.style.opacity = 0;
+			oCon.style.dispay = 'none';
+			oCon.style.WebkitTransition ='1s all ease';
+			oCon.style.MozTransition ='1s all ease';
+			oCon.style.transition ='1s all ease';
+
+			click(oCon,-400,0)
+		}
+		<!--作品展示-->
+		<!--背景音乐/按钮控制-->
+		var oMusic = document.querySelector('.music');
+		var oPm = document.querySelector('.playmusic');
+		var aMu = document.querySelectorAll('.music li');
+		var arr = ['Jar Of Love','给未来的自己 (Live)','何必怀念','未来的第一站 (Live)','奇妙能力歌','夜的钢琴曲'];
+		var oAudio = document.querySelector('audio');
+		var iNoww = 0;
+		for(var i=0;i<aMu.length;i++){
+			(function(index){
+				aMu[i].onclick = function(){
+					iNoww = index;
+					tab();
+				}
+			})(i)
+		}
+		function tab(){
+			for(var i=0;i<aMu.length;i++){
+				aMu[i].className = '';
+			}
+			aMu[iNoww].className ='active';
+			oAudio.src = 'mp3/'+arr[iNoww]+'.mp3';
+			oAudio.play();
+		}
+
+		oPm.onmouseenter = function(){
+			
+			move(oMusic,{left:-2});
+			move(oPm,{left:200});
+			
+		} 
+		
+		oMusic.onmouseleave = function(){
+			move(oMusic,{left:-202});
+			move(oPm,{left:0})
+		}
+		var oPcBtn = document.querySelector('.pc_btn');
+		var oPasue = document.querySelector('.pause');
+		var oContin = document.querySelector('.continue');
+		oPasue.onclick = function(){
+			//alert(1);
+			oContin.style.background = 'rgba(255,255,255,0.5)';	
+			oPasue.style.background = 'rgba(255,255,255,1)'
+			oAudio.pause();	
+		}
+		oContin.onclick = function(){
+			oContin.style.background = 'rgba(255,255,255,1)';	
+			oPasue.style.background = 'rgba(255,255,255,0.5)';
+			oAudio.play();
+		}
+		<!--圆形时钟-->
+		function toDou(iNum){
+			return iNum<10?'0'+iNum:''+iNum;
+		}
+		function d2a(n){
+			return n*Math.PI/180;
+		}
+		var oCanvas = document.getElementById('c1');
+		//alert(oCanvas)
+		var gd = oCanvas.getContext('2d');
+		var cx = oCanvas.width/2,
+			cy = oCanvas.height/2;
+		function clock2(){
+			gd.clearRect(0,0,oCanvas.width,oCanvas.height);
+			var oDate = new Date();
+			//alert(oDtae)
+			var HH = oDate.getHours()%12;
+			var MM = oDate.getMinutes();
+			var SS = oDate.getSeconds();
+			var MSS = oDate.getMilliseconds();
+			if(HH==0){
+				HH=12;
+			}
+			drawArc(100,cy,30,0,(HH*30+MM/60*30),'#f66');
+			drawArc(100,cy,30,0,360,'rgba(204,204,204,0.3)');
+			drawArc(200,cy,30,0,(MM*6+SS/60*6),'aqua');
+			drawArc(200,cy,30,0,360,'rgba(204,204,204,0.3)');
+			drawArc(300,cy,30,0,(SS*6+MSS/1000*6),'pink');
+			drawArc(300,cy,30,0,360,'rgba(204,204,204,0.3)');
+			
+			var str = toDou(HH);
+			var str2 = toDou(MM);
+			var str3 = toDou(SS);
+			gd.font = '20px 微软雅黑';
+			gd.textAlign = 'center';
+			gd.textBaseline = 'middle';
+			gd.fillText(str,100,cy);
+			gd.fillText(str2,200,cy);
+			gd.fillText(str3,300,cy);
+		}
+		clock2()
+		setInterval(clock2,1);
+		function drawArc(cx,cy,r,s,e,color){
+			color = color||'black';
+			gd.beginPath();
+			gd.arc(cx,cy,r,d2a(s-90),d2a(e-90),false);
+			gd.strokeStyle = color;
+			gd.lineWidth = 5;
+			gd.stroke();
+		}		
+		<!--说明-->
+		var oExpl = document.querySelector('.explain');
+		var oEx1 = document.querySelector('.ex1');
+		var oEx2 = document.querySelector('.ex2');
+		oEx1.onmouseenter = function(){
+			move(oExpl,{left:112})	
+		}
+		oExpl.onmouseleave = function(){
+			move(oExpl,{left:0})	
+		}
+		<!--个人资料部分-->
+		var oDesc = document.querySelector('.describe');
+		var aPer = document.querySelectorAll('.describe li');
+		for(var i=0;i<aPer.length;i++){
+			aPer[i].index=i;
+			aPer[i].onclick = function(){
+				aPer[this.index].style.WebkitTransform = 'rotate(-60deg)';
+				aPer[this.index].style.MozTransform = 'rotate(-60deg)';
+				aPer[this.index].style.transform = 'rotate(-60deg)';
+			}
+		}
+		<!--文字时钟-->
+		var oTbox = document.querySelector('.time_box');
+            ;(function(){
+                function aa(){
+                    var oDate =new Date();
+                    var h = oDate.getHours();
+                    var m = oDate.getMinutes();
+                    var s = oDate.getSeconds();
+                    oTbox.innerHTML=''+toDou(h)+':'+toDou(m)+':'+toDou(s)+'';
+                }
+                aa();
+                setInterval(aa,1000);
+
+            })();
+		<!--资料卡-->
+		var aLbtn = document.querySelectorAll('.interest li');
+			for(var i=0;i<aLbtn.length;i++){
+				aLbtn[i].index=i;
+				aLbtn[i].onmouseover = function(){
+					aLbtn[this.index].style.WebkitTransform = 'scale(1.5,1.5)';
+					aLbtn[this.index].style.MozTransform = 'scale(1.5,1.5)';
+					aLbtn[this.index].style.transform = 'scale(1.5,1.5)';
+				}
+				aLbtn[i].onmouseout = function(){
+					aLbtn[this.index].style.WebkitTransform = 'scale(1,1)';
+					aLbtn[this.index].style.MozTransform = 'scale(1,1)';
+					aLbtn[this.index].style.transform = 'scale(1,1)';
+				}
+			}
+		
+		
+        };
+</script>
+</head>
+
+<body>
+	<div class="back">
+        <a href="javascript:;" class="back_top">*↑</a>
+    </div>
+	<div class="pn_btn">
+         <a href="javascript:;" class="prev">Prev</a>
+        <a href="javascript:;" class="next">Next</a>
+    </div>
+<div id="all_site">
+    <ul class="explain">
+        <li class="ex1">说明</li>
+        <li class="ex2">此网站不兼容版本过低的浏览器,请您谅解</li>
+    </ul>
+	<div class="header">
+        <ul class="item clearfix" id="item">
+            <li class="active">主页</li>
+            <li>个人资料</li>
+            <li class="show">效果展示</li>
+            <i class="showTime">
+               <p class="pic_3d"><a href="code/show_3d.html">3D效果展示</a></p>
+               <p class="demo"><a href="code/demo.html">动画效果展示</a></p>
+               <p class="boom"><a href="code/boom.html">爆炸效果展示</a></p>
+               <p class="rotate"><a href="code/rotate.html">旋转效果展示</a></p>
+               <p class="wind"><a href="code/lines.html">"windows屏保"</a></p>
+            </i>
+        </ul>
+    </div>
+	<div class="top" id="top">
+        <div class="introduction"> 
+            <a href="javascript:;" class="intro_btn">*简介</a>
+            <ul class="intro_box">
+                <li>**小站简介^*^</li>
+                <li>*小站的灵感来自于很多细节</li>
+                <li>*这个小站没有特别"高大上"</li>
+                <li>*感觉良好，也许并不完美</li>
+                <li>*所以欢迎指导，会努力修改的</li>
+                <li>*但愿看到它能有个好心情^*^</li>
+                <li>*welcome To My WebSite</li>	
+                <a href="javascript:;" class="close_btn">*退出</a>
+            </ul>
+        </div>
+        <div class="introduction_two">
+            <a href="javascript:;" class="intro_btn_two">简介*</a>
+            <div class="intro_box_two">
+             	<li>**个人简介^*^</li>
+                <li>*姓名：刘丽莉</li>
+                <li>*年龄：20岁</li>
+                <li>*性别: 女</li>
+                <li>*待毕业院校：辽宁轨道交通职业学院</li>
+                <li>*所学专业：计算机网络技术</li>
+                <li>*特长：无...</li>
+                <li>*性格特征：喜欢安静也喜欢热闹,比较内向但偶尔外向,所以纠结！</li>
+                <a href="javascript:;" class="close_btn_two">*退出</a>
+            </div>
+        </div>
+        <div class="welcome">
+        	<h1>Welcome To My Web Site</h1>
+            <h2>欢迎来到我的个人网站</h2>
+        </div>
+        <div class="dis_hid">
+            <a href="javascript:;" class="dis1">显示</a>
+            <a href="javascript:;" class="hide">隐藏</a>
+            <div class="content">
+                <div class="clock">
+                    <div class="hou"></div>
+                    <div class="min"></div>
+                    <div class="sec"></div>
+                    <div class="cap"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="middle" id="middle">
+    	<ul class="describe clearfix">
+        	<li class="fl"><a href="javascript:;">个</a></li>
+            <li class="fl"><a href="javascript:;">人</a></li>
+            <li class="fl"><a href="javascript:;">资</a></li>
+            <li class="fl"><a href="javascript:;">料</a></li>
+        </ul>
+        <div class="time_box">00:00:00</div>
+        <ul class="interest clearfix">
+        	<li class="li1 fl">
+            	<p>姓名:刘丽莉</p>
+                <p>性别:女</p>
+                <p>年龄:20</p>
+            </li>
+            <li class="like fl">
+            	<h2>兴趣爱好</h2>
+                <span class="fl">爱猫</span>
+                <span class="fl">热爱学习</span>
+                <span class="fl">喜欢萌萌又帅气的东西</span>
+                <span class="fl">吃饭是一种习惯!</span>
+                <span class="fl">喜欢发现新的事物</span>
+            </li>
+        	<li class="li1 fl">
+            	<p class="education">教育:在读</p>
+                <p>所学专业:计算机网络技术</p>
+                <p>学龄:14年..</p>
+            </li>
+            <li class="like fl">
+            	<h2>必修课程</h2>
+                <p class="fl">静态网页设计</p>
+                <p class="fl">动态网页设计</p>
+                <p class="fl">移动应用开发</p>
+                <p class="fl">数据库维护</p>
+                <p class="fl">数据库应用</p>
+                <p class="fl">JAVA</p>
+                <p class="fl">计算机网络技术</p>
+                <p class="fl">有线网搭建</p>
+                <p class="fl">C语言</p>
+                <p class="fl">网站开发与设计</p>
+            </li>
+        	<li class="li1 fl">
+            	<p class="character">生活:热闹</p>
+                <p>积极向上</p>
+                <p>努力勇敢</p>
+            </li>
+            <li class="like fl">
+            	<h2>性格特征</h2>
+                <em>比较喜欢安静其实也爱热闹啦所以纠结...</em>
+                <em>不喜欢麻烦的事情</em>
+                <em>慢热不是不快乐</em>
+                <em></em>
+            </li>
+        </ul>
+    </div>
+    <div class="down clearfix" id="down">
+    	<audio id="audio"></audio>
+		<div class="pc_btn">
+            <p class="pause fl">暂停</p>
+            <p class="continue fl">继续</p> 
+        </div>   
+		<div class="">  
+            <div class="playmusic">音乐哦</div>
+            <ul class="music">
+                <li>Jar Of Love</li>
+                <li>给未来的自己 (Live)</li>
+                <li>何必怀念</li>
+                <li>未来的第一站 (Live)</li>
+                <li>奇妙能力歌</li>
+                <li>夜的钢琴曲</li>
+            </ul>        
+        </div>  
+        <canvas id="c1" class="c1" width="400" height="250"></canvas>
+        <ul class="wear clearfix">
+            <li class="bling fl">
+            	<span></span>
+                <h2>
+                  <p>There's</p>  
+                  <p class="light">BlingBling</p> 
+                  <p> even in</p> 
+                  <p>the darkest</p>  
+                  <p>places</p>
+                </h2>
+            </li>
+            <li class="fl">
+            	<span class="s1"></span>
+            	<img src="imgs/12.png" alt="" />
+            </li>
+            <li class="sun fl">
+            	<span></span>
+                <h1>
+                  <p>s</p>
+                  <p>u</p>
+                  <p>n</p>
+                </h1>
+            </li>
+            <li class="fl">
+            	<span></span>
+            	<img src="imgs/13.png" alt="" />
+            </li>
+            <li class="alive fl">
+            	<span></span>
+                <div class="wrapper">
+					<svg class="icon icon-alarm"><use xlink:href="#icon-alarm"></use><symbol id="icon-alarm" viewBox="0 0 32 32">
+					<title>alarm</title>
+					<path class="path1" fill="#4286f4" d="M16 4c-7.732 0-14 6.268-14 14s6.268 14 14 14 14-6.268 14-14-6.268-14-14-14zM16 29.25c-6.213 0-11.25-5.037-11.25-11.25s5.037-11.25 11.25-11.25c6.213 0 11.25 5.037 11.25 11.25s-5.037 11.25-11.25 11.25zM29.212 8.974c0.501-0.877 0.788-1.892 0.788-2.974 0-3.314-2.686-6-6-6-1.932 0-3.65 0.913-4.747 2.331 4.121 0.851 7.663 3.287 9.96 6.643v0zM12.748 2.331c-1.097-1.418-2.816-2.331-4.748-2.331-3.314 0-6 2.686-6 6 0 1.082 0.287 2.098 0.788 2.974 2.297-3.356 5.838-5.792 9.96-6.643z"></path>
+					<path class="path2" d="M16 18v-8h-2v10h8v-2z"></path>
+					</symbol></svg>
+                </div>
+            </li>
+            <li class="fl">
+            	<span></span>
+            	<img src="imgs/14.png" alt="" />
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

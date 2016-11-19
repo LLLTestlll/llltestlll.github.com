@@ -1,0 +1,38 @@
+html,body{background:url(../imgs/14.jpg) no-repeat; background-size:100%;}
+/*导航条*/
+.header {width:100%; height:40px;background:#fff; opacity:0.5; position:fixed; z-index:88;}
+.header .item{ margin-left:600px;}
+.header .item li { float:left; margin-top:10px;width:100px; height:100%; cursor:pointer; padding-right:20px;}
+.header .item li a{ display:block; color:rgba(102,102,102,1); font-size:16px;padding-right:20px; font-weight:bold;
+ padding:0 15px;}
+.showTime{ display:none; width:180px; height:160px; background:rgba(255,255,255,0.7); 
+border:1px solid #ccc;position:absolute; top:35px; right:450px; border-radius:10px;}
+.showTime p {border-bottom:2px dashed #ccc;margin-left:10px; margin-right:10px;}
+.showTime p a{ width:280px;font-size:16px; color:#000; line-height:30px; cursor:pointer; 
+ font-style:normal; }
+/*回到顶部*/ 
+.back{ width:30px; height:70px; background:#000; opacity:0.3; position:fixed; right:0px;
+ bottom:50px;}
+.back_top{ font-size:18px; color:#fff;line-height:70px;}
+
+/*作品展示*/
+.show_3d {width:100px; height:400px; padding:100px 300px;}
+.show_3d p { width:40px; height:30px; border:1px solid #ccc; cursor:pointer;
+text-align:center; line-height:30px; background:rgba(255,255,255,0.3); font-weight:bold;}
+.show_3d .next_btn{ position:absolute; top:60px; left:50%;cursor:pointer;}
+.show_3d .prev_btn{ position:absolute;top:60px; left:45%;cursor:pointer;}
+.show_3d .tblr{padding-top:100px; width:200px;height:200px;-webkit-transform-style:preserve-3d;
+-moz-transform-style:preserve-3d;perspective:800px; margin-left:200px;}
+.show_3d .tblr li{position:absolute;top:60; left:30;width:200px;height:200px;text-align:center;
+line-height:200px;font-size:50px;opacity:0; color:#fff;}
+.show_3d .tblr li img{ width:200px; height:200px;}
+.show_3d .tblr .l2{opacity:0;-webkit-transform: translate(-280px,0) rotateY(45deg);
+-moz-transform: translate(-280px,0) rotateY(45deg);z-index:3;}
+.show_3d .tblr .l1{opacity:1;-webkit-transform: translate(-220px,0) rotateY(45deg);
+-moz-transform: translate(-220px,0) rotateY(45deg);z-index:4;}
+.show_3d .tblr .cur{opacity:1;-webkit-transform:translateZ(50px);
+-moz-transform:translateZ(50px);z-index:5;}
+.show_3d .tblr .r1{opacity:1;-webkit-transform: translate(220px,0) rotateY(-45deg);
+-moz-transform: translate(220px,0) rotateY(-45deg);z-index:4;}
+.show_3d .tblr .r2{opacity:0;-webkit-transform: translate(280px,0) rotateY(-45deg);
+-moz-transform: translate(280px,0) rotateY(-45deg);z-index:3;}
